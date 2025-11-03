@@ -122,7 +122,7 @@ experimental_design <- data.frame(label = colnames(data[, value_columns])) %>%
 # DEP filtering and normalization
 data_se <- make_se(data, value_columns, experimental_design)
 data_filt <- filter_proteins(data_se, type = parameters$filtering_type, thr = 0)
-data_norm <- normalize_vsn(data_filt)
+data_norm <- suppressMessages(normalize_vsn(data_filt))
 if (parameters$filtering_type == "condition") {
   data_imp <- impute(data_norm, fun = "MinProb", q = 0.01)          #choose imputation method [NOT RECOMMENDED]
 } else {
@@ -186,7 +186,7 @@ for (j in seq_along(datalist_other)) {
   # DEP filtering and normalization
   data_se <- make_se(data, value_columns, experimental_design)
   data_filt <- filter_proteins(data_se, type = parameters$filtering_type, thr = 0)
-  data_norm <- normalize_vsn(data_filt)
+  data_norm <- suppressMessages(normalize_vsn(data_filt))
   if (parameters$filtering_type == "condition") {
     data_imp <- impute(data_norm, fun = "MinProb", q = 0.01)          #choose imputation method [NOT RECOMMENDED]
   } else {

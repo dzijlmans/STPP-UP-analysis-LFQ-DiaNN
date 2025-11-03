@@ -139,7 +139,7 @@ message("Contrasts to run: ", paste(contrasts, collapse = ", "))
 
 for (contrast in contrasts) {
   
-  message("Running contrast ", contrast, " and running DEP...")
+  message("Analyzing contrast ", contrast, "...")
   
   base_condition  <- strsplit(contrast, "_vs_")[[1]][2]
   treat_condition <- strsplit(contrast, "_vs_")[[1]][1]
@@ -168,7 +168,7 @@ for (contrast in contrasts) {
   # DEP filtering and normalization
   data_carrier_se <- make_se(data_carrier, value_columns_carrier, experimental_design_carrier)
   data_carrier_filt <- filter_proteins(data_carrier_se, type = parameters$filtering_type, thr = 0)
-  data_carrier_norm <- normalize_vsn(data_carrier_filt)
+  data_carrier_norm <- suppressMessages(normalize_vsn(data_carrier_filt))
   if (parameters$filtering_type == "condition") {
     data_carrier_imp <- impute(data_carrier_norm, fun = "MinProb", q = 0.01)          #choose imputation method [NOT RECOMMENDED]
   } else {
@@ -223,7 +223,7 @@ for (contrast in contrasts) {
     # DEP filtering and normalization
     data_heat_se <- make_se(data_heat, value_columns_heat, experimental_design_heat)
     data_heat_filt <- filter_proteins(data_heat_se, type = parameters$filtering_type, thr = 0)
-    data_heat_norm <- normalize_vsn(data_heat_filt)
+    data_heat_norm <- suppressMessages(normalize_vsn(data_heat_filt))
     if (parameters$filtering_type == "condition") {
       data_heat_imp <- impute(data_heat_norm, fun = "MinProb", q = 0.01)          #choose imputation method [NOT RECOMMENDED]
     } else {

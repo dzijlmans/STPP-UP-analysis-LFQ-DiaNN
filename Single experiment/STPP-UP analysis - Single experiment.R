@@ -96,7 +96,7 @@ proteinGroups <-
                     values_from = "values")
 
 # Split dataset into carrier & heating conditions
-datalist <- split(proteinGroups, f = ~ proteinGroups$heating)                   
+datalist <- split(proteinGroups, f = proteinGroups$heating)                   
 datalist_carrier <- datalist[names(datalist) %in% c("Carrier")]
 datalist_other <- datalist[!names(datalist) %in% c("Carrier")]
 

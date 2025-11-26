@@ -52,6 +52,14 @@ tkmessageBox(message = paste(
 # Define parameters
 parameters <- read.xlsx("analysis_parameters_stppup.xlsx")
 
+# Helper function
+extract_conditions <- function(df) {
+  sample_cols <- colnames(df)[grepl("_[0-9]+$", colnames(df))]
+  # remove trailing _replicate digits
+  conds <- unique(sub("_[0-9]+$", "", sample_cols))
+  return(conds)
+}
+
 
 # ------------------------------------------------------------
 # Data import and preprocessing
@@ -97,7 +105,7 @@ proteinGroups <-
                     values_from = "values")
 
 # Split dataset into carrier & heating conditions
-datalist <- split(proteinGroups, f = ~ proteinGroups$heating)                   
+datalist <- split(proteinGroups, f = proteinGroups$heating)                   
 datalist_carrier <- datalist[names(datalist) %in% c("Carrier")]
 datalist_other <- datalist[!names(datalist) %in% c("Carrier")]
 
@@ -107,14 +115,6 @@ results_list <- list()
 # ------------------------------------------------------------
 # Contrast extraction
 # ------------------------------------------------------------
-
-# Helper function
-extract_conditions <- function(df) {
-  sample_cols <- colnames(df)[grepl("_[0-9]+$", colnames(df))]
-  # remove trailing _replicate digits
-  conds <- unique(sub("_[0-9]+$", "", sample_cols))
-  return(conds)
-}
 
 contrasts <- NULL
 if (parameters$comparison == "manual") {
@@ -198,6 +198,11 @@ for (contrast in contrasts) {
   print(plot_volcano(dep_carrier, contrast = contrast, label_size = 2, add_names = TRUE))
   
   dev.off()
+  
+  # Set up Excel file
+  wb <- createWorkbook()
+  addWorksheet(wb, "Carrier")
+  writeData(wb, "Carrier", results_list[[paste0("Carrier_", contrast)]])
   
   
   # ------------------------------------------------------------
@@ -371,28 +376,24 @@ for (contrast in contrasts) {
         ) +
         xlab("log2FC carrier") +
         ylab("log2FC STPP-UP (uncorrected)") +
-        ggtitle(paste0(heat_name, ": ", contrast, " QC comparison")) +
+        ggtitle(paste0(heat_name, ": ", treat_condition, " vs ", base_condition, " QC comparison")) +
         theme_bw(base_size = 12)
     )
     
     dev.off()
 
+    # Set up Excel file
+    addWorksheet(wb, paste0(heat_name, "_uncorrected"))
+    addWorksheet(wb, paste0(heat_name, "_corrected"))
+    writeData(wb, paste0(heat_name, "_uncorrected"), results_list[[paste0(heat_name, "_", contrast, "_uncorrected")]])
+    writeData(wb, paste0(heat_name, "_corrected"), results_list[[paste0(heat_name, "_", contrast, "_corrected")]])
+    
   }
   
   
   # ------------------------------------------------------------
   # Write Excel file per contrast
   # ------------------------------------------------------------
-  
-  wb <- createWorkbook()
-  
-  addWorksheet(wb, "Carrier")
-  addWorksheet(wb, paste0(heat_name, "_uncorrected"))
-  addWorksheet(wb, paste0(heat_name, "_corrected"))
-  
-  writeData(wb, "Carrier", results_list[[paste0("Carrier_", contrast)]])
-  writeData(wb, paste0(heat_name, "_uncorrected"), results_list[[paste0(heat_name, "_", contrast, "_uncorrected")]])
-  writeData(wb, paste0(heat_name, "_corrected"), results_list[[paste0(heat_name, "_", contrast, "_corrected")]])
   
   saveWorkbook(wb, paste0("DEP_results_", contrast, ".xlsx"), overwrite = TRUE)
   

@@ -43,13 +43,18 @@ Explanations are also present in the Excel file, when hovering over the paramete
 Make sure your .raw files and output are correctly named, as outlined below. Otherwise the script may not run succesfully.
 
 ```.raw mass spec files``` - Please ensure that the abundance column names (and thus the .raw files) contain the name of the mass spectrometer used (e.g. Astral, Exploris) and the following information, in order and separated by an underscore:
-- heating conditions (e.g. Carrier)
+- heating conditions (e.g. Carrier/STPPUP)
+- <ins>Optional:</ins> condition B (e.g. multiple culture conditions or cell lines). If you have this, use the ```Multiple conditions per contrast.R``` script.
 - drug/compound treatment (e.g. C1/DMSO)
 - Replicate (e.g. 1)
              
-Example: ```20250205_Astral_AUR_DZ114_Carrier_C1_1.raw```
+Examples: ```20250205_Astral_AUR_DZ114_Carrier_C1_1.raw``` or  ```20250205_Astral_AUR_DZ114_Carrier_WT_C1_1.raw```
 
-```DiaNN``` - Output files should end on ```*pg_matrix.tsv``` and ```*pr_matrix.tsv```.
+```*pg_matrix.tsv``` - This files contains proteins and intesities
+
+```*pr_matrix.tsv``` - This files contains the peptides and is used for filtering
+
+```analysis_parameters_stppup.xlsx``` - Contains parameters required for analysis
 
 ### Credit
 
